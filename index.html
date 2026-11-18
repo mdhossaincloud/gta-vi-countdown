@@ -1,0 +1,1829 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080d12">
+  <meta name="description" content="A cinematic, fan-made GTA VI launch night countdown experience. Local countdown, interactive checklist, and day one answers.">
+  <title>GTA VI Launch Night Experience</title>
+  <style>
+    /* ---------- RESET / BASE ---------- */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg: #080d12;
+      --bg-2: #0b1219;
+      --panel: rgba(17, 27, 35, 0.72);
+      --panel-solid: #111b23;
+      --line: rgba(73, 102, 117, 0.35);
+      --line-bright: rgba(85, 227, 196, 0.28);
+      --text: #f3f7f8;
+      --muted: #9aabb4;
+      --muted-2: #7a8f9a;
+      --mint: #55e3c4;
+      --mint-dim: #2f8f7d;
+      --amber: #f0c779;
+      --orange: #ff9f5a;
+      --purple: #b06bff;
+      --pink: #ff5fa2;
+      --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.55);
+      --shadow-md: 0 12px 36px rgba(0, 0, 0, 0.35);
+      --radius: 20px;
+      --radius-sm: 14px;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ---------- FULL-SCREEN INTERACTIVE BACKGROUND ---------- */
+    .bg-fx {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      --mx: 50%;
+      --my: 50%;
+      --mxp: 0;
+      --myp: 0;
+    }
+
+    /* Base cinematic wash */
+    .bg-base {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 90% 55% at 50% -12%, rgba(28, 86, 92, 0.55) 0%, transparent 62%),
+        radial-gradient(ellipse 60% 40% at 85% 20%, rgba(176, 107, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 45% at 10% 35%, rgba(255, 95, 162, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 100% 60% at 50% 110%, rgba(255, 159, 90, 0.07) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 55%, #06090d 100%);
+      transition: opacity 0.4s var(--ease-out);
+    }
+
+    /* Mouse-following spotlight */
+    .bg-spotlight {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        600px circle at var(--mx) var(--my),
+        rgba(85, 227, 196, 0.13) 0%,
+        rgba(85, 227, 196, 0.05) 22%,
+        rgba(176, 107, 255, 0.03) 45%,
+        transparent 68%
+      );
+      transition: background 0.2s ease-out;
+      mix-blend-mode: screen;
+      opacity: 0.9;
+    }
+
+    /* Secondary warm spotlight for depth */
+    .bg-spotlight-warm {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        700px circle at calc(100% - var(--mx)) calc(100% - var(--my)),
+        rgba(255, 159, 90, 0.09) 0%,
+        rgba(255, 95, 162, 0.04) 30%,
+        transparent 60%
+      );
+      transition: background 0.3s ease-out;
+      mix-blend-mode: screen;
+      opacity: 0.75;
+    }
+
+    /* Animated orbs */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      will-change: transform;
+      transition: transform 0.4s var(--ease-out);
+      pointer-events: none;
+    }
+
+    .glow-orb.o1 {
+      width: 52vmax;
+      height: 52vmax;
+      top: -20vmax;
+      left: -12vmax;
+      background: radial-gradient(circle, rgba(85, 227, 196, 0.26), transparent 65%);
+      transform: translate3d(calc(var(--mxp) * 26px), calc(var(--myp) * 26px), 0);
+      opacity: 0.65;
+    }
+
+    .glow-orb.o2 {
+      width: 42vmax;
+      height: 42vmax;
+      top: 6vmax;
+      right: -14vmax;
+      background: radial-gradient(circle, rgba(176, 107, 255, 0.24), transparent 65%);
+      transform: translate3d(calc(var(--mxp) * -32px), calc(var(--myp) * -22px), 0);
+      opacity: 0.6;
+    }
+
+    .glow-orb.o3 {
+      width: 48vmax;
+      height: 48vmax;
+      bottom: -22vmax;
+      left: 20%;
+      background: radial-gradient(circle, rgba(255, 159, 90, 0.18), transparent 65%);
+      transform: translate3d(calc(var(--mxp) * 18px), calc(var(--myp) * -28px), 0);
+      opacity: 0.55;
+    }
+
+    .glow-orb.o4 {
+      width: 34vmax;
+      height: 34vmax;
+      top: 40%;
+      left: 55%;
+      background: radial-gradient(circle, rgba(255, 95, 162, 0.16), transparent 65%);
+      transform: translate3d(calc(var(--mxp) * -24px), calc(var(--myp) * 34px), 0);
+      opacity: 0.5;
+    }
+
+    /* Mouse-reactive grid / lines */
+    .bg-grid {
+      position: absolute;
+      inset: -20%;
+      background-image:
+        linear-gradient(rgba(85, 227, 196, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 227, 196, 0.05) 1px, transparent 1px);
+      background-size: 64px 64px;
+      transform:
+        translate3d(calc(var(--mxp) * -14px), calc(var(--myp) * -14px), 0)
+        perspective(800px)
+        rotateX(calc(var(--myp) * 2deg))
+        rotateY(calc(var(--mxp) * -2deg));
+      transition: transform 0.5s var(--ease-out);
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0,0,0,0.65), transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0,0,0,0.65), transparent 75%);
+      opacity: 0.7;
+    }
+
+    /* Floating particles that react subtly */
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 10px rgba(85, 227, 196, 0.8);
+      opacity: 0.5;
+      transition: transform 0.3s ease-out, opacity 0.3s;
+    }
+
+    .particle:nth-child(1) { top: 12%; left: 18%; transform: translate3d(calc(var(--mxp) * 14px), calc(var(--myp) * 10px), 0); }
+    .particle:nth-child(2) { top: 28%; left: 82%; transform: translate3d(calc(var(--mxp) * -18px), calc(var(--myp) * 12px), 0); background: var(--purple); box-shadow: 0 0 10px rgba(176, 107, 255, 0.8); }
+    .particle:nth-child(3) { top: 62%; left: 12%; transform: translate3d(calc(var(--mxp) * 10px), calc(var(--myp) * -16px), 0); background: var(--amber); box-shadow: 0 0 10px rgba(240, 199, 121, 0.8); }
+    .particle:nth-child(4) { top: 74%; left: 88%; transform: translate3d(calc(var(--mxp) * -12px), calc(var(--myp) * -10px), 0); background: var(--pink); box-shadow: 0 0 10px rgba(255, 95, 162, 0.8); }
+    .particle:nth-child(5) { top: 45%; left: 50%; transform: translate3d(calc(var(--mxp) * 22px), calc(var(--myp) * -22px), 0); opacity: 0.35; }
+    .particle:nth-child(6) { top: 18%; left: 62%; transform: translate3d(calc(var(--mxp) * -16px), calc(var(--myp) * 18px), 0); background: var(--orange); box-shadow: 0 0 10px rgba(255, 159, 90, 0.8); opacity: 0.4; }
+
+    /* Fine grain and scanlines */
+    .grain {
+      position: absolute;
+      inset: -50%;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      mix-blend-mode: overlay;
+    }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.018) 0px,
+        rgba(255, 255, 255, 0.018) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      opacity: 0.3;
+    }
+
+    /* Subtle vignette that deepens on hover */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
+      transition: opacity 0.4s var(--ease-out);
+      pointer-events: none;
+    }
+
+    /* A soft animated sheen following the cursor */
+    .cursor-sheen {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        180px circle at var(--mx) var(--my),
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 40%,
+        transparent 70%
+      );
+      mix-blend-mode: overlay;
+      transition: background 0.15s ease-out;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 22px 0 60px;
+    }
+
+    /* ---------- NAV ---------- */
+    header.site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0 30px;
+      animation: fadeUp 0.9s var(--ease-out) both;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.18em;
+      color: #c7d4d9;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 4px rgba(85, 227, 196, 0.12), 0 0 18px rgba(85, 227, 196, 0.65);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.75; }
+    }
+
+    .brand em {
+      font-style: normal;
+      color: var(--mint);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.25s var(--ease-spring), filter 0.25s, box-shadow 0.25s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--mint);
+      outline-offset: 3px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--mint) 0%, #3fcbb0 55%, #2fb8a0 100%);
+      color: #06211d;
+      box-shadow: 0 8px 28px rgba(85, 227, 196, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      filter: brightness(1.06);
+      box-shadow: 0 14px 38px rgba(85, 227, 196, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--line-bright);
+      background: rgba(85, 227, 196, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn .arrow {
+      display: inline-block;
+      transition: transform 0.25s var(--ease-spring);
+    }
+
+    .btn:hover .arrow {
+      transform: translate(2px, -2px);
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      text-align: center;
+      padding: clamp(40px, 8vw, 90px) 0 20px;
+      animation: fadeUp 1s var(--ease-out) 0.08s both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--mint);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: 1px solid var(--line-bright);
+      border-radius: 999px;
+      background: rgba(85, 227, 196, 0.06);
+      backdrop-filter: blur(8px);
+      margin-bottom: 26px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 10px var(--mint);
+    }
+
+    h1.hero-title {
+      margin: 0 0 20px;
+      font-size: clamp(40px, 9.5vw, 96px);
+      line-height: 0.94;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+      text-wrap: balance;
+    }
+
+    .hero-title .line-2 {
+      display: block;
+      background: linear-gradient(100deg, var(--mint) 0%, #6ff0d8 30%, var(--amber) 70%, var(--orange) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 32px rgba(85, 227, 196, 0.22));
+    }
+
+    .hero-sub {
+      margin: 0 auto;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: clamp(14px, 1.5vw, 16px);
+      line-height: 1.65;
+      text-wrap: balance;
+    }
+
+    .hero-date {
+      margin-top: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--amber);
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero-date::before,
+    .hero-date::after {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(240, 199, 121, 0.7));
+    }
+
+    .hero-date::after {
+      background: linear-gradient(90deg, rgba(240, 199, 121, 0.7), transparent);
+    }
+
+    /* ---------- COUNTDOWN ---------- */
+    .countdown-wrap {
+      margin-top: clamp(34px, 6vw, 56px);
+      perspective: 900px;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(8px, 1.6vw, 18px);
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .unit {
+      position: relative;
+      background: linear-gradient(158deg, rgba(26, 42, 52, 0.85) 0%, rgba(13, 21, 28, 0.95) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(16px, 3vw, 30px) 6px clamp(14px, 2.2vw, 22px);
+      box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform 0.45s var(--ease-spring), border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .unit::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 120% 65% at 50% 0%, rgba(85, 227, 196, 0.1), transparent 65%),
+        radial-gradient(ellipse 100% 50% at 50% 100%, rgba(176, 107, 255, 0.06), transparent 70%);
+      opacity: 0.9;
+    }
+
+    .unit::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(85, 227, 196, 0.5), transparent);
+      opacity: 0.7;
+    }
+
+    .unit:hover {
+      transform: translateY(-4px) scale(1.015);
+      border-color: rgba(85, 227, 196, 0.35);
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(85, 227, 196, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .number {
+      position: relative;
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(38px, 8.5vw, 80px);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      color: var(--text);
+      text-shadow: 0 0 30px rgba(85, 227, 196, 0.18);
+      transition: color 0.3s, text-shadow 0.3s;
+      will-change: transform;
+    }
+
+    .number.tick {
+      animation: digitPop 0.42s var(--ease-spring);
+    }
+
+    @keyframes digitPop {
+      0% { transform: translateY(-6px) scale(1.06); opacity: 0.35; }
+      60% { transform: translateY(1px) scale(1.01); opacity: 1; }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    .label {
+      margin-top: 12px;
+      font-size: clamp(8px, 1.1vw, 10.5px);
+      color: var(--muted-2);
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .timezone {
+      margin-top: 20px;
+      font-size: 11.5px;
+      color: var(--muted-2);
+      letter-spacing: 0.03em;
+    }
+
+    .timezone .tz-highlight {
+      color: var(--mint);
+      font-weight: 700;
+    }
+
+    /* ---------- CHECKLIST ---------- */
+    .checklist-card {
+      position: relative;
+      max-width: 720px;
+      margin: clamp(48px, 8vw, 76px) auto 0;
+      background: linear-gradient(150deg, rgba(20, 33, 42, 0.9) 0%, rgba(13, 21, 28, 0.95) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 34px);
+      text-align: left;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(14px);
+      animation: fadeUp 1s var(--ease-out) 0.16s both;
+      overflow: hidden;
+    }
+
+    .checklist-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(85, 227, 196, 0.4), rgba(240, 199, 121, 0.3), transparent);
+    }
+
+    .check-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    h2.check-title {
+      font-size: clamp(19px, 2.4vw, 24px);
+      letter-spacing: -0.03em;
+      margin: 0;
+      font-weight: 850;
+    }
+
+    .check-count {
+      font-size: 12.5px;
+      color: var(--mint);
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(85, 227, 196, 0.08);
+      border: 1px solid rgba(85, 227, 196, 0.18);
+    }
+
+    .check-intro {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 0 0 18px;
+      line-height: 1.55;
+    }
+
+    .progress {
+      height: 7px;
+      background: rgba(38, 54, 64, 0.9);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--mint-dim), var(--mint) 60%, #8ff5e0 100%);
+      box-shadow: 0 0 16px rgba(85, 227, 196, 0.55);
+      transition: width 0.55s var(--ease-out);
+      will-change: width;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 14px;
+      border: 1px solid rgba(38, 54, 64, 0.85);
+      border-radius: var(--radius-sm);
+      background: rgba(12, 20, 26, 0.65);
+      margin-top: 10px;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s, transform 0.2s var(--ease-spring), box-shadow 0.25s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .task:hover {
+      border-color: rgba(71, 115, 110, 0.85);
+      background: rgba(16, 28, 34, 0.85);
+      transform: translateX(3px);
+    }
+
+    .task:active {
+      transform: scale(0.995);
+    }
+
+    .task:focus-within {
+      border-color: var(--mint);
+      box-shadow: 0 0 0 3px rgba(85, 227, 196, 0.16);
+    }
+
+    .task input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
+      border: 2px solid rgba(122, 143, 154, 0.7);
+      border-radius: 7px;
+      background: rgba(8, 13, 18, 0.8);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease-spring);
+      margin: 0;
+    }
+
+    .task input[type="checkbox"]::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 3px;
+      background: var(--mint);
+      opacity: 0;
+      transform: scale(0.4);
+      transition: opacity 0.2s, transform 0.25s var(--ease-spring);
+    }
+
+    .task input[type="checkbox"]:checked {
+      border-color: var(--mint);
+      background: rgba(85, 227, 196, 0.14);
+    }
+
+    .task input[type="checkbox"]:checked::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .task input[type="checkbox"]:focus-visible {
+      outline: 2px solid var(--mint);
+      outline-offset: 3px;
+    }
+
+    .task span {
+      font-size: 14.5px;
+      font-weight: 650;
+      color: var(--text);
+      transition: color 0.25s;
+    }
+
+    .task.done {
+      border-color: rgba(85, 227, 196, 0.22);
+      background: rgba(16, 32, 34, 0.6);
+    }
+
+    .task.done span {
+      color: var(--muted-2);
+      text-decoration: line-through;
+      text-decoration-color: rgba(85, 227, 196, 0.5);
+      text-decoration-thickness: 1.5px;
+    }
+
+    .footnote {
+      margin-top: 18px;
+      font-size: 11.5px;
+      color: var(--muted-2);
+      text-align: center;
+      line-height: 1.5;
+      transition: color 0.3s;
+    }
+
+    /* ---------- CTA SECTION ---------- */
+    .cta-section {
+      margin-top: clamp(44px, 7vw, 68px);
+      text-align: center;
+      animation: fadeUp 1s var(--ease-out) 0.24s both;
+    }
+
+    .cta-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 34px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--mint) 0%, #43d6b9 45%, var(--amber) 130%);
+      color: #06211d;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer;
+      overflow: hidden;
+      isolation: isolate;
+      box-shadow: 0 12px 40px rgba(85, 227, 196, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+      transition: transform 0.3s var(--ease-spring), box-shadow 0.3s, filter 0.3s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .cta-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.35) 50%, transparent 80%);
+      transform: translateX(-120%);
+      transition: transform 0.7s var(--ease-out);
+    }
+
+    .cta-btn:hover::before {
+      transform: translateX(120%);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-3px) scale(1.025);
+      box-shadow: 0 18px 50px rgba(85, 227, 196, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      filter: brightness(1.05);
+    }
+
+    .cta-btn:active {
+      transform: translateY(-1px) scale(0.99);
+    }
+
+    .cta-btn:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 4px;
+    }
+
+    .cta-note {
+      margin-top: 14px;
+      font-size: 11.5px;
+      color: var(--muted-2);
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      position: relative;
+      z-index: 1;
+      margin-top: clamp(50px, 8vw, 84px);
+      padding: 26px 20px 34px;
+      text-align: center;
+      border-top: 1px solid rgba(38, 54, 64, 0.65);
+      color: var(--muted-2);
+      font-size: 11.5px;
+      line-height: 1.7;
+    }
+
+    footer .heart {
+      color: var(--pink);
+    }
+
+    /* ---------- UTILITY / ANIMATIONS ---------- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(26px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 720px) {
+      main {
+        width: calc(100% - 28px);
+        padding-top: 14px;
+      }
+
+      header.site-nav {
+        padding-bottom: 18px;
+      }
+
+      .brand {
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        font-size: 11.5px;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+
+      .countdown {
+        gap: 8px;
+      }
+
+      .unit {
+        border-radius: 15px;
+      }
+
+      .number {
+        font-size: clamp(34px, 10vw, 56px);
+      }
+
+      .label {
+        letter-spacing: 0.16em;
+      }
+
+      .checklist-card {
+        padding: 22px 18px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .brand .brand-text-long {
+        display: none;
+      }
+
+      .nav-right .btn-ghost {
+        display: none;
+      }
+
+      .countdown {
+        gap: 6px;
+      }
+
+      .unit {
+        border-radius: 12px;
+        padding: 16px 3px 13px;
+      }
+
+      .number {
+        font-size: clamp(30px, 11vw, 44px);
+      }
+
+      .label {
+        font-size: 7.5px;
+        letter-spacing: 0.12em;
+        margin-top: 8px;
+      }
+
+      .timezone {
+        font-size: 10.5px;
+      }
+
+      .task {
+        padding: 14px 11px;
+        gap: 12px;
+      }
+
+      .task span {
+        font-size: 13.5px;
+      }
+
+      .cta-btn {
+        padding: 15px 26px;
+        font-size: 13px;
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .bg-grid,
+      .glow-orb,
+      .particle {
+        transition: none !important;
+      }
+    }
+
+    /* =====================================================================
+       V2 UPGRADE LAYER (appended; original rules above are untouched)
+       ===================================================================== */
+    .fx-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    @media (pointer: fine) { .fx-canvas { mix-blend-mode: screen; } }
+    .bg-fx.no-canvas .fx-canvas { display: none; }
+
+    /* Hero composition */
+    @keyframes titleIn { from { opacity: 0; transform: translateY(22px) scale(0.985); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+    @keyframes sheen { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+    h1.hero-title { animation: titleIn 1.4s var(--ease-out) 0.15s both; }
+    .hero-title .line-2 { background-size: 220% 100%; animation: sheen 10s ease-in-out infinite alternate; }
+    .eyebrow { animation: fadeUp 1s var(--ease-out) 0.05s both; }
+    .hero-sub { animation: fadeUp 1s var(--ease-out) 0.45s both; }
+    .hero-date { animation: fadeUp 1s var(--ease-out) 0.6s both; text-shadow: 0 0 22px rgba(240, 199, 121, 0.35); }
+
+    /* Countdown: glass surfaces, cursor light, real-value progress bars */
+    .unit {
+      background:
+        radial-gradient(240px circle at var(--lx, -300px) var(--ly, 0px), rgba(85, 227, 196, 0.13), transparent 62%),
+        linear-gradient(158deg, rgba(26, 42, 52, 0.58) 0%, rgba(13, 21, 28, 0.78) 100%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    @keyframes digitPop { 0% { transform: translateY(-14px); opacity: 0; } 55% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+    .unit-bar {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+      transform-origin: left center; transform: scaleX(0);
+      background: linear-gradient(90deg, var(--mint), var(--amber), var(--orange));
+      box-shadow: 0 0 12px rgba(85, 227, 196, 0.6);
+      transition: transform 0.95s linear;
+    }
+
+    /* Checklist: glass, animated tick, shimmer, completion glow */
+    .checklist-card {
+      background:
+        radial-gradient(360px circle at var(--lx, -400px) var(--ly, 0px), rgba(85, 227, 196, 0.07), transparent 62%),
+        linear-gradient(150deg, rgba(20, 33, 42, 0.68) 0%, rgba(13, 21, 28, 0.82) 100%);
+      transition: box-shadow 0.6s var(--ease-out), border-color 0.6s;
+    }
+    .checklist-card.complete { border-color: rgba(85, 227, 196, 0.45); box-shadow: var(--shadow-md), 0 0 60px rgba(85, 227, 196, 0.14); }
+    .task { background: radial-gradient(220px circle at var(--lx, -300px) var(--ly, 50%), rgba(85, 227, 196, 0.09), transparent 62%), rgba(12, 20, 26, 0.6); }
+    .task:hover { background: radial-gradient(220px circle at var(--lx, -300px) var(--ly, 50%), rgba(85, 227, 196, 0.12), transparent 62%), rgba(16, 28, 34, 0.8); }
+    .task.done { background: radial-gradient(220px circle at var(--lx, -300px) var(--ly, 50%), rgba(85, 227, 196, 0.09), transparent 62%), rgba(16, 32, 34, 0.6); box-shadow: 0 0 26px rgba(85, 227, 196, 0.07); }
+    .task input[type="checkbox"]::after {
+      inset: auto; left: 5px; top: 1px; width: 5px; height: 10px; border-radius: 0; background: none;
+      border: solid var(--mint); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(0.3);
+    }
+    .task input[type="checkbox"]:checked::after { transform: rotate(45deg) scale(1); }
+    .task input[type="checkbox"]:checked { box-shadow: 0 0 14px rgba(85, 227, 196, 0.4); }
+    .progress-fill { position: relative; overflow: hidden; }
+    .progress-fill::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+      transform: translateX(-100%); animation: shimmer 2.8s ease-in-out infinite;
+    }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+
+    /* Buttons: cursor light + magnetic pull (uses independent `translate`) */
+    .btn { transition: transform 0.25s var(--ease-spring), filter 0.25s, box-shadow 0.25s, translate 0.3s var(--ease-out); translate: var(--tx, 0px) var(--ty, 0px); }
+    .cta-btn { transition: transform 0.3s var(--ease-spring), box-shadow 0.3s, filter 0.3s, translate 0.3s var(--ease-out); translate: var(--tx, 0px) var(--ty, 0px); }
+    .btn-primary { background: radial-gradient(130px circle at var(--lx, 50%) var(--ly, 50%), rgba(255, 255, 255, 0.34), transparent 60%), linear-gradient(135deg, var(--mint) 0%, #3fcbb0 55%, #2fb8a0 100%); }
+    .cta-btn { background: radial-gradient(160px circle at var(--lx, 50%) var(--ly, 50%), rgba(255, 255, 255, 0.32), transparent 60%), linear-gradient(135deg, var(--mint) 0%, #43d6b9 45%, var(--amber) 130%); }
+
+    /* Scroll reveal (class added by JS only, so no-JS users see everything) */
+    .reveal { opacity: 0; transform: translateY(28px); animation: none; transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out); }
+    .reveal.in { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       FULL-SCREEN INTERACTIVE BACKGROUND
+       Mouse position drives spotlights, orb parallax, grid tilt,
+       particle drift and a soft cursor sheen.
+       ============================================================ -->
+  <div class="bg-fx" id="bgFx" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-spotlight-warm"></div>
+    <div class="bg-spotlight"></div>
+    <div class="bg-grid"></div>
+
+    <div class="glow-orb o1"></div>
+    <div class="glow-orb o2"></div>
+    <div class="glow-orb o3"></div>
+    <div class="glow-orb o4"></div>
+
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+
+    <div class="scanlines"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="cursor-sheen"></div>
+  </div>
+
+  <main>
+    <!-- NAV -->
+    <header class="site-nav">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-text-long">LAUNCH&nbsp;NIGHT&nbsp;<em>/</em>&nbsp;COUNTDOWN</span>
+        <span class="sr-only">Launch Night Countdown</span>
+      </div>
+      <div class="nav-right">
+        <a class="btn btn-ghost" href="#checklist">Checklist</a>
+        <a class="btn btn-primary" href="#" id="answersBtnTop">
+          Day One Answers <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow">The wait is almost over</div>
+
+      <h1 class="hero-title" id="heroTitle">
+        GTA&nbsp;VI
+        <span class="line-2">Launch Night</span>
+      </h1>
+
+      <p class="hero-sub">
+        Get ready for the moment the countdown hits zero. Your local launch-night timer is below.
+      </p>
+
+      <div class="hero-date" id="targetDate">NOVEMBER 19</div>
+
+      <div class="countdown-wrap">
+        <div class="countdown" role="timer" aria-live="off" aria-label="Time remaining until November 19 at midnight">
+          <div class="unit">
+            <div class="number" id="days">00</div>
+            <div class="label">Days</div>
+          </div>
+          <div class="unit">
+            <div class="number" id="hours">00</div>
+            <div class="label">Hours</div>
+          </div>
+          <div class="unit">
+            <div class="number" id="minutes">00</div>
+            <div class="label">Minutes</div>
+          </div>
+          <div class="unit">
+            <div class="number" id="seconds">00</div>
+            <div class="label">Seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timezone" id="timezone">Detecting your local timezone…</div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section class="checklist-card" id="checklist" aria-labelledby="checkTitle">
+      <div class="check-head">
+        <h2 class="check-title" id="checkTitle">Day one checklist</h2>
+        <div class="check-count" id="checkCount">0 / 4 ready</div>
+      </div>
+      <p class="check-intro">Tick each task as you get ready. Your checklist is saved in this browser when possible.</p>
+
+      <div class="progress" aria-hidden="true">
+        <div class="progress-fill" id="checkProgress"></div>
+      </div>
+
+      <label class="task" for="task-preload">
+        <input type="checkbox" id="task-preload" data-task="preload">
+        <span>Game pre-loaded</span>
+      </label>
+      <label class="task" for="task-storage">
+        <input type="checkbox" id="task-storage" data-task="storage">
+        <span>Enough storage space free</span>
+      </label>
+      <label class="task" for="task-controller">
+        <input type="checkbox" id="task-controller" data-task="controller">
+        <span>Controller charged</span>
+      </label>
+      <label class="task" for="task-snacks">
+        <input type="checkbox" id="task-snacks" data-task="snacks">
+        <span>Snacks ready</span>
+      </label>
+
+      <div class="footnote" id="saveStatus" role="status">Checklist is saved on this device when browser storage is available.</div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <a class="cta-btn" href="#" id="answersBtnMain" aria-label="Open Day One Answers">
+        Day One Answers <span aria-hidden="true">↗</span>
+      </a>
+      <div class="cta-note">Your one-stop guide for launch night.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Fan-made countdown page. Not affiliated with or endorsed by Rockstar Games.</div>
+    <div>Built for the launch night community. <span class="heart">♥</span></div>
+  </footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // ============================================================
+      // CONFIGURATION
+      // ============================================================
+      // Replace this with your published Day One Answers page URL.
+      // Leave as "" or "#" to use the built-in fallback.
+      const ANSWERS_PAGE_URL = "";
+
+      const STORAGE_KEY = "gta-vi-launch-checklist-v1";
+      const LAUNCH_MONTH = 10; // November (0-indexed)
+      const LAUNCH_DAY = 19;
+
+      // ============================================================
+      // DOM HELPERS
+      // ============================================================
+      const $ = (id) => document.getElementById(id);
+      const pad = (n) => String(n).padStart(2, "0");
+
+      const els = {
+        days: $("days"),
+        hours: $("hours"),
+        minutes: $("minutes"),
+        seconds: $("seconds"),
+        targetDate: $("targetDate"),
+        timezone: $("timezone"),
+        checkCount: $("checkCount"),
+        checkProgress: $("checkProgress"),
+        saveStatus: $("saveStatus"),
+        answersTop: $("answersBtnTop"),
+        answersMain: $("answersBtnMain"),
+        bgFx: $("bgFx"),
+      };
+
+      // ============================================================
+      // MOUSE / TOUCH INTERACTIVE BACKGROUND
+      // ============================================================
+      function initBackgroundInteraction() {
+        const bg = els.bgFx;
+        if (!bg) return;
+
+        let rafId = null;
+        let targetX = 0.5;
+        let targetY = 0.5;
+        let currentX = 0.5;
+        let currentY = 0.5;
+
+        const prefersReduced =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function onMove(clientX, clientY) {
+          const w = window.innerWidth || 1;
+          const h = window.innerHeight || 1;
+          targetX = Math.min(1, Math.max(0, clientX / w));
+          targetY = Math.min(1, Math.max(0, clientY / h));
+          schedule();
+        }
+
+        function onMouseMove(e) {
+          onMove(e.clientX, e.clientY);
+        }
+
+        function onTouchMove(e) {
+          if (e.touches && e.touches[0]) {
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }
+
+        function onLeave() {
+          // Gently drift back to centre
+          targetX = 0.5;
+          targetY = 0.5;
+          schedule();
+        }
+
+        function schedule() {
+          if (rafId !== null) return;
+          rafId = requestAnimationFrame(tick);
+        }
+
+        function tick() {
+          rafId = null;
+
+          // Smooth interpolation for silky motion
+          const ease = 0.12;
+          currentX += (targetX - currentX) * ease;
+          currentY += (targetY - currentY) * ease;
+
+          const px = currentX * 100;
+          const py = currentY * 100;
+
+          // Signed -1..1 offsets for parallax
+          const sx = (currentX - 0.5) * 2;
+          const sy = (currentY - 0.5) * 2;
+
+          bg.style.setProperty("--mx", px + "%");
+          bg.style.setProperty("--my", py + "%");
+          bg.style.setProperty("--mxp", sx.toFixed(4));
+          bg.style.setProperty("--myp", sy.toFixed(4));
+
+          // Keep animating until close enough to target
+          if (
+            Math.abs(targetX - currentX) > 0.001 ||
+            Math.abs(targetY - currentY) > 0.001
+          ) {
+            schedule();
+          }
+        }
+
+        if (!prefersReduced) {
+          window.addEventListener("mousemove", onMouseMove, { passive: true });
+          window.addEventListener("touchmove", onTouchMove, { passive: true });
+          window.addEventListener("mouseleave", onLeave, { passive: true });
+          window.addEventListener("touchend", onLeave, { passive: true });
+        }
+
+        // Set a pleasant default centre position
+        bg.style.setProperty("--mx", "50%");
+        bg.style.setProperty("--my", "45%");
+        bg.style.setProperty("--mxp", "0");
+        bg.style.setProperty("--myp", "0");
+      }
+
+      // ============================================================
+      // V2: AMBIENT ENGINE (Canvas 2D) — cursor-reactive atmosphere
+      // Lights + fluid ribbons + particle field + soft energy trail.
+      // The CSS layers above remain as the graceful fallback.
+      // ============================================================
+      function initAmbientEngine() {
+        const bg = els.bgFx;
+        if (!bg) return;
+        const mq = (q) => !!(window.matchMedia && window.matchMedia(q).matches);
+        const reduced = mq("(prefers-reduced-motion: reduce)");
+        const coarse = mq("(pointer: coarse)");
+
+        let canvas, ctx;
+        try {
+          canvas = document.createElement("canvas");
+          canvas.className = "fx-canvas";
+          ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("2d unavailable");
+          bg.insertBefore(canvas, bg.querySelector(".scanlines"));
+        } catch (_) {
+          bg.classList.add("no-canvas");
+          return;
+        }
+
+        const COLORS = [[85, 227, 196], [90, 200, 255], [176, 107, 255], [240, 199, 121], [255, 159, 90]];
+        const sprites = COLORS.map((c) => {
+          const s = document.createElement("canvas");
+          s.width = s.height = 64;
+          const g = s.getContext("2d");
+          if (!g) return null;
+          const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+          rg.addColorStop(0, "rgba(" + c + ",1)");
+          rg.addColorStop(0.25, "rgba(" + c + ",0.45)");
+          rg.addColorStop(1, "rgba(" + c + ",0)");
+          g.fillStyle = rg;
+          g.fillRect(0, 0, 64, 64);
+          return s;
+        });
+
+        let W = 0, H = 0, dpr = 1, isMobile = false, waveGrad = null;
+        let particles = [], trail = [];
+        let raf = 0, running = false, lastT = 0, resizeTimer = 0;
+        const ptr = { x: innerWidth / 2, y: innerHeight * 0.45, tx: innerWidth / 2, ty: innerHeight * 0.45, vx: 0, vy: 0, last: 0 };
+        const lights = [
+          { x: ptr.x, y: ptr.y, r: 400, c: 0, a: 0.17, lag: 0.09 },
+          { x: ptr.x, y: ptr.y, r: 480, c: 2, a: 0.12, lag: 0.045 },
+          { x: ptr.x, y: ptr.y, r: 440, c: 4, a: 0.09, lag: 0.03 },
+          { x: ptr.x, y: ptr.y, r: 210, c: 1, a: 0.13, lag: 0.16 },
+        ];
+
+        function makeParticle() {
+          return {
+            x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+            bx: (Math.random() - 0.5) * 0.14, by: -(0.04 + Math.random() * 0.14),
+            r: 0.7 + Math.random() * 1.9, a: 0.18 + Math.random() * 0.38,
+            c: (Math.random() * COLORS.length) | 0, ph: Math.random() * 6.283, z: 0.3 + Math.random() * 0.7,
+          };
+        }
+
+        function resize() {
+          isMobile = coarse || innerWidth < 720;
+          dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5);
+          W = innerWidth; H = innerHeight;
+          canvas.width = Math.round(W * dpr);
+          canvas.height = Math.round(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          const count = isMobile ? 26 : Math.min(90, Math.round((W * H) / 17000));
+          while (particles.length < count) particles.push(makeParticle());
+          particles.length = count;
+          waveGrad = ctx.createLinearGradient(0, 0, W, 0);
+          waveGrad.addColorStop(0, "rgb(85,227,196)");
+          waveGrad.addColorStop(0.5, "rgb(176,107,255)");
+          waveGrad.addColorStop(1, "rgb(255,159,90)");
+          if (reduced) draw(performance.now(), 1);
+        }
+
+        // Pointer (mouse/pen only; touch gets the autonomous path)
+        let pend = null, hoverEl = null;
+        const GLOW_SEL = ".unit,.checklist-card,.task,.btn,.cta-btn";
+        function onPointer(e) {
+          if (e.pointerType === "touch") return;
+          ptr.tx = e.clientX; ptr.ty = e.clientY; ptr.last = performance.now();
+          pend = e;
+        }
+        function onLeaveDoc() { ptr.last = 0; }
+        function releaseMagnet(el) { el.style.removeProperty("--tx"); el.style.removeProperty("--ty"); }
+        function handleHover() {
+          if (!pend) return;
+          const e = pend; pend = null;
+          const el = e.target && e.target.closest ? e.target.closest(GLOW_SEL) : null;
+          if (hoverEl && hoverEl !== el) releaseMagnet(hoverEl);
+          hoverEl = el;
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          el.style.setProperty("--lx", (e.clientX - r.left).toFixed(0) + "px");
+          el.style.setProperty("--ly", (e.clientY - r.top).toFixed(0) + "px");
+          if (el.matches(".btn,.cta-btn")) {
+            el.style.setProperty("--tx", (((e.clientX - r.left) / r.width - 0.5) * 10).toFixed(1) + "px");
+            el.style.setProperty("--ty", (((e.clientY - r.top) / r.height - 0.5) * 8).toFixed(1) + "px");
+          }
+        }
+
+        function frame(now) {
+          if (!running) return;
+          raf = requestAnimationFrame(frame);
+          if (isMobile && now - lastT < 32) return; // ~30fps on phones
+          const dt = Math.min(48, now - lastT || 16.7);
+          lastT = now;
+          const k = dt / 16.67;
+          const auto = isMobile || now - ptr.last > 3500;
+          if (auto) {
+            const s = now * 0.00022;
+            ptr.tx = W * (0.5 + 0.3 * Math.sin(s * 1.3) + 0.12 * Math.sin(s * 3.1));
+            ptr.ty = H * (0.45 + 0.28 * Math.cos(s * 0.9) + 0.1 * Math.sin(s * 2.3));
+          }
+          const ox = ptr.x, oy = ptr.y, e = 1 - Math.pow(1 - 0.085, k);
+          ptr.x += (ptr.tx - ptr.x) * e;
+          ptr.y += (ptr.ty - ptr.y) * e;
+          ptr.vx += ((ptr.x - ox) / k - ptr.vx) * 0.2;
+          ptr.vy += ((ptr.y - oy) / k - ptr.vy) * 0.2;
+          if (!auto && !isMobile) {
+            const last = trail[trail.length - 1];
+            if (!last || Math.hypot(ptr.x - last.x, ptr.y - last.y) > 5) trail.push({ x: ptr.x, y: ptr.y, t: now });
+          }
+          handleHover();
+          draw(now, k);
+        }
+
+        function draw(now, k) {
+          ctx.clearRect(0, 0, W, H);
+          ctx.globalCompositeOperation = "lighter";
+          const speed = Math.min(1, Math.hypot(ptr.vx, ptr.vy) / 30);
+          const boost = 1 + speed * 0.5;
+
+          // 1. Layered, lagging light field (+ a counter-light for depth)
+          const n = isMobile ? 3 : lights.length;
+          for (let i = 0; i < n; i++) {
+            const l = lights[i];
+            const tx = i === 2 ? W - ptr.x : ptr.x + (i === 1 ? -140 : 0);
+            const ty = i === 2 ? H - ptr.y : ptr.y + (i === 1 ? 110 : 0);
+            const f = 1 - Math.pow(1 - l.lag, k);
+            l.x += (tx - l.x) * f; l.y += (ty - l.y) * f;
+            const c = COLORS[l.c], r = l.r * (isMobile ? 0.8 : 1);
+            const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, r);
+            g.addColorStop(0, "rgba(" + c + "," + (l.a * boost).toFixed(3) + ")");
+            g.addColorStop(0.5, "rgba(" + c + "," + (l.a * 0.28).toFixed(3) + ")");
+            g.addColorStop(1, "rgba(" + c + ",0)");
+            ctx.fillStyle = g;
+            ctx.fillRect(l.x - r, l.y - r, r * 2, r * 2);
+          }
+
+          // 2. Fluid ribbons, pulled toward the cursor
+          const step = isMobile ? 56 : 32, ribbons = isMobile ? 2 : 3;
+          const sc = (window.pageYOffset || 0) * 0.0006;
+          ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.strokeStyle = waveGrad;
+          for (let j = 0; j < ribbons; j++) {
+            const base = H * (0.28 + j * 0.22), amp = 34 + j * 14;
+            ctx.beginPath();
+            for (let x = -step; x <= W + step; x += step) {
+              let y = base + Math.sin(x * 0.0042 + now * 0.0004 * (1 + j * 0.3) + j * 2 + sc) * amp
+                           + Math.sin(x * 0.0017 - now * 0.0003 + j) * amp * 0.7;
+              const dx = x - ptr.x;
+              y += (ptr.y - y) * 0.24 * Math.exp(-(dx * dx) / (2 * 250 * 250));
+              if (x < 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.globalAlpha = 0.04; ctx.lineWidth = 78; ctx.stroke();
+            ctx.globalAlpha = 0.07; ctx.lineWidth = 12; ctx.stroke();
+          }
+
+          // 3. Particle field with gentle repel/attract
+          const R = 190;
+          const px = (ptr.x / W - 0.5) * 2, py = (ptr.y / H - 0.5) * 2;
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.vx += (p.bx + Math.sin(now * 0.0003 + p.ph) * 0.012) * 0.06 * k;
+            p.vy += (p.by + Math.cos(now * 0.00025 + p.ph) * 0.012) * 0.06 * k;
+            const dx = p.x - ptr.x, dy = p.y - ptr.y, d = Math.hypot(dx, dy);
+            let near = 0;
+            if (d < R && d > 0.1) {
+              near = 1 - d / R;
+              const dir = d < R * 0.4 ? 1 : -0.18; // repel inside, soft pull outside
+              p.vx += (dx / d) * near * dir * 0.5 * k;
+              p.vy += (dy / d) * near * dir * 0.5 * k;
+            }
+            p.vx *= 0.95; p.vy *= 0.95;
+            p.x += p.vx * k * 2 + p.bx * k; p.y += p.vy * k * 2 + p.by * k;
+            if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
+            if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20;
+            const sp = sprites[p.c];
+            if (!sp) continue;
+            const tw = 0.7 + 0.3 * Math.sin(now * 0.0015 + p.ph), size = p.r * 7 * (1 + near * 0.6);
+            ctx.globalAlpha = Math.min(0.7, p.a * tw * (1 + near * 1.2));
+            ctx.drawImage(sp, p.x + px * p.z * 16 - size / 2, p.y + py * p.z * 16 - size / 2, size, size);
+          }
+
+          // 4. Soft energy trail (desktop, only while the mouse is moving)
+          if (trail.length) {
+            while (trail.length && now - trail[0].t > 650) trail.shift();
+            if (trail.length > 36) trail.splice(0, trail.length - 36);
+            for (let i = 0; i < trail.length; i++) {
+              const t = trail[i], life = 1 - (now - t.t) / 650, sp = sprites[i % 2 ? 0 : 3];
+              if (!sp || life <= 0) continue;
+              const size = 10 + life * 30;
+              ctx.globalAlpha = life * life * 0.2;
+              ctx.drawImage(sp, t.x - size / 2, t.y - size / 2, size, size);
+            }
+          }
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "source-over";
+        }
+
+        function start() {
+          if (running || reduced) return;
+          running = true; lastT = performance.now();
+          raf = requestAnimationFrame(frame);
+        }
+        function stop() { running = false; cancelAnimationFrame(raf); }
+
+        resize();
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(resize, 150);
+        }, { passive: true });
+        if (reduced) return; // static frame only, no loop, no pointer work
+        window.addEventListener("pointermove", onPointer, { passive: true });
+        document.addEventListener("mouseleave", onLeaveDoc, { passive: true });
+        document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+        if (!document.hidden) start();
+      }
+
+      // Scroll reveal for below-the-fold blocks (content stays visible if IO is missing)
+      function initReveal() {
+        if (!("IntersectionObserver" in window)) return;
+        const items = document.querySelectorAll(".checklist-card, .cta-section, footer");
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((en) => {
+            if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+          });
+        }, { threshold: 0.12 });
+        items.forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+      }
+
+      // Countdown unit progress bars: reflect the REAL values, never fake ones
+      const unitBars = [];
+      function initUnitBars() {
+        document.querySelectorAll(".unit").forEach((u) => {
+          const b = document.createElement("i");
+          b.className = "unit-bar";
+          b.setAttribute("aria-hidden", "true");
+          u.appendChild(b);
+          unitBars.push(b);
+        });
+      }
+      function updateUnitBars(d, h, m, s) {
+        const v = [Math.min(d / 365, 1), h / 24, m / 60, s / 60];
+        unitBars.forEach((b, i) => {
+          b.style.transition = i === 3 && s === 0 ? "none" : "";
+          b.style.transform = "scaleX(" + v[i].toFixed(4) + ")";
+        });
+      }
+
+      // ============================================================
+      // TARGET DATE LOGIC
+      // ============================================================
+      function getTargetDate() {
+        const now = new Date();
+        let year = now.getFullYear();
+        let target = new Date(year, LAUNCH_MONTH, LAUNCH_DAY, 0, 0, 0, 0);
+
+        // Keep this year's target for the whole of launch day (matches the live
+        // rollover rule in updateCountdown); only roll to next year from Nov 20.
+        const dayAfter = new Date(year, LAUNCH_MONTH, LAUNCH_DAY + 1, 0, 0, 0, 0);
+        if (now.getTime() >= dayAfter.getTime()) {
+          target = new Date(year + 1, LAUNCH_MONTH, LAUNCH_DAY, 0, 0, 0, 0);
+        }
+
+        return target;
+      }
+
+      let targetDate = getTargetDate();
+
+      // ============================================================
+      // COUNTDOWN
+      // ============================================================
+      const numberEls = [els.days, els.hours, els.minutes, els.seconds];
+      const lastValues = ["", "", "", ""];
+
+      function animateNumber(el, newText, index) {
+        if (!el) return;
+        if (lastValues[index] === newText) return;
+        lastValues[index] = newText;
+        el.textContent = newText;
+        el.classList.remove("tick");
+        void el.offsetWidth;
+        el.classList.add("tick");
+      }
+
+      function updateCountdown() {
+        const now = new Date();
+        const diff = Math.max(0, targetDate.getTime() - now.getTime());
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        animateNumber(els.days, pad(days), 0);
+        animateNumber(els.hours, pad(hours), 1);
+        animateNumber(els.minutes, pad(minutes), 2);
+        animateNumber(els.seconds, pad(seconds), 3);
+        updateUnitBars(days, hours, minutes, seconds);
+
+        if (diff <= 0) {
+          const dayAfter = new Date(
+            targetDate.getFullYear(),
+            LAUNCH_MONTH,
+            LAUNCH_DAY + 1,
+            0, 0, 0, 0
+          );
+          if (now.getTime() >= dayAfter.getTime()) {
+            targetDate = new Date(
+              targetDate.getFullYear() + 1,
+              LAUNCH_MONTH,
+              LAUNCH_DAY,
+              0, 0, 0, 0
+            );
+            updateDateLabel();
+          }
+        }
+      }
+
+      function updateDateLabel() {
+        try {
+          const formatted = new Intl.DateTimeFormat(undefined, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }).format(targetDate);
+          els.targetDate.textContent = formatted.toUpperCase();
+        } catch (_) {
+          els.targetDate.textContent = "NOVEMBER 19";
+        }
+      }
+
+      function updateTimezoneLabel() {
+        try {
+          const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "your local time zone";
+          els.timezone.innerHTML =
+            'Countdown uses <span class="tz-highlight">' +
+            escapeHtml(zone) +
+            '</span> (your device\'s local time)';
+        } catch (_) {
+          els.timezone.textContent = "Countdown uses your device's local time";
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // ============================================================
+      // CHECKLIST
+      // ============================================================
+      const boxes = Array.from(document.querySelectorAll("[data-task]"));
+      let savedTasks = {};
+      let storageAvailable = true;
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            savedTasks = parsed;
+          }
+        }
+      } catch (_) {
+        storageAvailable = false;
+      }
+
+      function getTaskRow(box) {
+        return box.closest(".task");
+      }
+
+      function renderChecklist() {
+        let checkedCount = 0;
+
+        boxes.forEach((box) => {
+          const key = box.dataset.task;
+          const isChecked = Boolean(savedTasks[key]);
+          box.checked = isChecked;
+
+          const row = getTaskRow(box);
+          if (row) {
+            row.classList.toggle("done", isChecked);
+          }
+
+          if (isChecked) checkedCount++;
+        });
+
+        const total = boxes.length || 1;
+        const percent = Math.round((checkedCount / total) * 100);
+
+        if (els.checkCount) {
+          els.checkCount.textContent = checkedCount + " / " + total + " ready";
+        }
+        if (els.checkProgress) {
+          els.checkProgress.style.width = percent + "%";
+          const card = els.checkProgress.closest(".checklist-card");
+          if (card) card.classList.toggle("complete", checkedCount === total);
+        }
+      }
+
+      function persistChecklist() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(savedTasks));
+          storageAvailable = true;
+          if (els.saveStatus) {
+            els.saveStatus.textContent = "Checklist saved in this browser on this device.";
+            els.saveStatus.style.color = "";
+          }
+        } catch (_) {
+          storageAvailable = false;
+          if (els.saveStatus) {
+            els.saveStatus.textContent =
+              "Browser storage is blocked or unavailable. Checklist still works until you close or reload this page.";
+            els.saveStatus.style.color = "var(--amber)";
+          }
+        }
+      }
+
+      boxes.forEach((box) => {
+        box.addEventListener("change", () => {
+          const key = box.dataset.task;
+          savedTasks[key] = box.checked;
+          persistChecklist();
+          renderChecklist();
+        });
+
+        const row = getTaskRow(box);
+        if (row) {
+          row.addEventListener("keydown", (e) => {
+            if (e.key === " " || e.key === "Spacebar") {
+              e.preventDefault();
+              box.checked = !box.checked;
+              box.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          });
+        }
+      });
+
+      if (!storageAvailable && els.saveStatus) {
+        els.saveStatus.textContent = "Storage unavailable. Checklist still works for this visit.";
+        els.saveStatus.style.color = "var(--amber)";
+      }
+
+      // ============================================================
+      // ANSWERS BUTTON
+      // ============================================================
+      function isConfiguredUrl(url) {
+        if (!url || typeof url !== "string") return false;
+        const trimmed = url.trim();
+        return trimmed !== "" && trimmed !== "#" && trimmed !== "PASTE_YOUR_ANSWERS_URL_HERE";
+      }
+
+      function setupAnswersButton(btn) {
+        if (!btn) return;
+
+        const configured = isConfiguredUrl(ANSWERS_PAGE_URL);
+
+        if (configured) {
+          btn.setAttribute("href", ANSWERS_PAGE_URL.trim());
+          btn.setAttribute("target", "_blank");
+          btn.setAttribute("rel", "noopener noreferrer");
+          btn.removeAttribute("aria-disabled");
+        } else {
+          btn.setAttribute("href", "#");
+          btn.setAttribute("data-answers-fallback", "true");
+          btn.removeAttribute("target");
+          btn.removeAttribute("rel");
+          btn.setAttribute("aria-label", "Day One Answers – link not configured yet");
+
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            showAnswersFallback();
+          });
+        }
+      }
+
+      function showAnswersFallback() {
+        const message =
+          "Day One Answers is not configured yet.\n\n" +
+          "To link it, open this file and set the ANSWERS_PAGE_URL constant " +
+          "to your published answers page URL.";
+
+        try {
+          window.alert(message);
+        } catch (_) {
+          const note = document.querySelector(".cta-note");
+          if (note) {
+            note.textContent = "Answers page not configured yet. Set ANSWERS_PAGE_URL in the code.";
+            note.style.color = "var(--amber)";
+          }
+        }
+      }
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      function init() {
+        updateDateLabel();
+        updateTimezoneLabel();
+        initUnitBars();
+        updateCountdown();
+        renderChecklist();
+        setupAnswersButton(els.answersTop);
+        setupAnswersButton(els.answersMain);
+        initBackgroundInteraction();
+        try { initAmbientEngine(); } catch (_) { /* CSS background remains */ }
+        try { initReveal(); } catch (_) {}
+
+        setInterval(() => {
+          const now = new Date();
+          if (now.getTime() >= targetDate.getTime()) {
+            const dayAfter = new Date(
+              targetDate.getFullYear(),
+              LAUNCH_MONTH,
+              LAUNCH_DAY + 1,
+              0, 0, 0, 0
+            );
+            if (now.getTime() >= dayAfter.getTime()) {
+              targetDate = new Date(
+                targetDate.getFullYear() + 1,
+                LAUNCH_MONTH,
+                LAUNCH_DAY,
+                0, 0, 0, 0
+              );
+              updateDateLabel();
+            }
+          }
+          updateCountdown();
+        }, 1000);
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
